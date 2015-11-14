@@ -95,6 +95,9 @@ class Menu{
         $accessToken = AccessToken::getAccessToken();
         $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token='.$accessToken;
         $result = Curl::callWebServer($url, $data, 'POST');
+
+        var_dump($result);
+
         if($result['errcode'] == 0){
             return true;
         }

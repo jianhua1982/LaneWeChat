@@ -150,5 +150,6 @@ $list[] = array('thumb_media_id'=>$menuId['media_id'] , 'author'=>'作者', 'tit
 $list[] = array('thumb_media_id'=>$menuId['media_id'] , 'author'=>'作者', 'title'=>'标题', 'content_source_url'=>'www.lanecn.com', 'digest'=>'摘要', 'show_cover_pic'=>'0');
 $list[] = array('thumb_media_id'=>$menuId['media_id'] , 'author'=>'作者', 'title'=>'标题', 'content_source_url'=>'www.lanecn.com', 'digest'=>'摘要', 'show_cover_pic'=>'0');
 $mediaId = \LaneWeChat\Core\AdvancedBroadcast::uploadNews($list);
+
 //给粉丝列表的用户群发图文消息
 $result = \LaneWeChat\Core\AdvancedBroadcast::sentNewsByOpenId($fansList['data']['openid'], $mediaId);

@@ -1,5 +1,8 @@
 <?php
 namespace LaneWeChat;
+
+ini_set("display_errors", "On");
+
 /**
  * 系统主配置文件.
  * @Created by Lane.

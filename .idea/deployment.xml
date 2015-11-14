@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="qxu1780730062.my3w.com">
+    <serverData>
+      <paths name="qxu1780730062.my3w.com">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/htdocs/LaneWeChat" local="$PROJECT_DIR$" web="/LaneWeChat" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

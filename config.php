@@ -16,16 +16,28 @@ define('LANEWECHAT_VERSION_DATE', '2014-11-05');
 /*
  * 服务器配置，详情请参考@link http://mp.weixin.qq.com/wiki/index.php?title=接入指南
  */
-define("WECHAT_URL", 'http://www.lanecn.com');
-define('WECHAT_TOKEN', 'weixin');
+define("WECHAT_URL", 'http://www.wygreen.cn');
+define('WECHAT_TOKEN', 'wygreen');
 define('ENCODING_AES_KEY', "MqAuKoex6FyT5No0OcpRyCicThGs0P1vz4mJ2gwvvkF");
 
 /*
  * 开发者配置
  */
-define("WECHAT_APPID", 'wx5d57f64bb4804d90');
-define("WECHAT_APPSECRET", '4b1fa6d9442351ec9268eff05e38f521');
 
+/*
+ * Home test env
+ */
+define("WECHAT_APPID", 'wxe755419ca7f45e03');
+define("WECHAT_APPSECRET", 'ca279c6d4e8d8a286f9fa2474156bb51');
+
+
+
+
+/*
+ * Company env
+ */
+// www.uisheji.me
+// http://www.uisheji.me/wxwallet/phpmain/LaneWeChat/wechat.php
 
 //-----引入系统所需类库-------------------
 //引入错误消息类

@@ -22,7 +22,8 @@ include 'lanewechat.php';
 
 if (isset($_GET['code'])) {
     $code = $_GET['code'];
-    var $ret = \LaneWeChat\Core\WeChatOAuth::getAccessTokenAndOpenId($code);
+    $ret = \LaneWeChat\Core\WeChatOAuth::getAccessTokenAndOpenId($code);
+
     var_dump($ret);
 }
 else  {
@@ -32,8 +33,8 @@ else  {
      * 将会跳转到redirect_uri/?code=CODE&state=STATE 通过GET方式获取code和state
      */
     //$redirect_uri = '获取CODE时，发送请求和参数给微信服务器，微信服务器会处理后将跳转到本参数指定的URL页面';
-    $redirect_uri = '/gruntInfo.php';
-    \LaneWeChat\Core\WeChatOAuth::getCode($redirect_uri, $state=1, $scope='snsapi_base');
+    $redirect_uri = '/LaneWeChat//gruntInfo.php';
+    \LaneWeChat\Core\WeChatOAuth::getCode($redirect_uri, $state=1, $scope='snsapi_userinfo');
 }
 
 

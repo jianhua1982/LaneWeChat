@@ -42,6 +42,7 @@ class Menu{
                 }
             }
         }
+
         //处理数据
         foreach($menuList as $key=>$menu){
             //处理type和code

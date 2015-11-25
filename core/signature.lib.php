@@ -26,8 +26,7 @@ class Signature
     private $url;
     private $cache;
 
-    public function __construct($appId, $appSecret, $mem, $url)
-    {
+    public function __construct($appId, $appSecret, $mem, $url) {
         $this->appId = $appId;
         $this->appSecret = $appSecret;
         $this->mem = $mem;
@@ -35,10 +34,11 @@ class Signature
 
         $this->cache = new Cache();
     }
-//
-//    /**
-//     * 生成签名
-//     */
+
+
+    /**
+     * 生成签名
+     */
     public function getSignPackage() {
         $jsapiTicket = $this->getJsApiTicket();
         $timestamp = time();
@@ -65,12 +65,6 @@ class Signature
     private function getJsApiTicket() {
 
         $ticketKey = 'wxwallet_jsapi_ticket';
-
-        //var_dump($ticketKey);
-
-        //$data = $this->mem->get($ticketKey);
-
-        //var_dump($this->cache);
 
         $data = $this->cache->retrieve($ticketKey);
         if (!$data) {
@@ -128,70 +122,5 @@ class Signature
             $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
         }
         return $str;
-    }
-
-    /**
-     *  post message to weixin server.
-     */
-    public function getDataByPostMessage($subUrl, $data) {
-
-//        if(!!$subUrl || $subUrl == '') {
-//            return null;
-//        }
-
-        //print('here --2');
-
-        $accessToken = $this->getAccessToken();
-
-        $url = 'https://api.weixin.qq.com/cgi-bin/'.$subUrl.'?access_token='.urlencode($accessToken);
-
-        //echo '$url = '.$url;
-
-        //$url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$this->appId&secret=$this->appSecret";
-        $result = HttpUtil::sendPostRequest($url, json_encode($data));
-
-        //echo '<br>$result = '.$result;
-
-        //var_dump(json_encode($result));
-
-        $result = json_decode($result, true);
-
-        return $result;
-    }
-
-    /**
-     * @param $subUrl
-     * @param $params
-     * @return mixed
-     */
-    public function fetchDataByGetRequest($subUrl, $params, $prefix)
-    {
-        // ~ https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET
-        $url = $prefix ? $prefix : 'https://api.weixin.qq.com/cgi-bin/';
-
-        $url .= $subUrl;
-
-        //$age=array("Bill"=>"35","Steve"=>"37","Peter"=>"43");
-        $str = '';
-        foreach($params as $x=>$x_value) {
-            //echo "Key=" . $x . ", Value=" . $x_value;
-            $str .= $x.'='.urlencode($x_value).'&';
-        }
-
-        if($params) {
-            $str = substr($str,0, strlen($str) - 1);
-            $url .= '?'.$str;
-        }
-
-        //var_dump($url);
-
-        $ret = HttpUtil::sendGetRequet($url, true);
-
-        return $ret;
-
-        //var_dump($ret);
-
-        //$result = json_decode($ret, true);
-        //return $result;
     }
 }

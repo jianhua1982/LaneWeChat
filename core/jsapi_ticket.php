@@ -37,7 +37,6 @@ class JsapiTicket {
 		} else {
 			return $this->reloadTicket();
 		}
-			
 	}
 
 	private function reloadTicket() {

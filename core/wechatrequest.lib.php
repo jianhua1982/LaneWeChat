@@ -125,6 +125,12 @@ class WechatRequest{
         return $data;
     }
 
+    // debugging info
+    public static function showDebugging(&$request, &$content){
+        foreach($request['scancodeinfo'] as $x=>$x_value) {
+            $content .= '键：' . $x . "值:" . $x_value . '   ';
+        }
+    }
 
     /**
      * @descrpition 文本
@@ -299,9 +305,32 @@ class WechatRequest{
         //获取该分类的信息
         $eventKey = $request['eventkey'];
         $content = '收到扫码推事件且弹出“消息接收中”提示框的事件，您设置的key是' . $eventKey;
-        $content .= '。扫描信息：'.$request['scancodeinfo'];
-        $content .= '。扫描类型(一般是qrcode)：'.$request['scantype'];
-        $content .= '。扫描结果(二维码对应的字符串信息)：'.$request['scanresult'];
+//        $content .= '。扫描信息：'.$request['scancodeinfo'];
+//        $content .= '。扫描类型(一般是qrcode)：'.$request['scantype'];
+//        $content .= '。扫描结果(二维码对应的字符串信息)：'.$request['scanresult'];
+
+        $scanInfo = $request['scancodeinfo'];
+
+//        if($scanInfo) {
+//            $scanInfo = json_decode($scanInfo);
+//            $content .= '。扫描类型：'.$scanInfo['ScanType'];
+//            $content .= '。扫描结果：'.$scanInfo['ScanResult'];
+//        }
+//        else {
+//            $content .= '。扫描信息：无';
+//        }
+
+        $content .= '。扫描信息：'.$scanInfo;
+
+//        foreach($request['scancodeinfo'] as $x=>$x_value) {
+//            $content .= '键：'. $x . "值:" .$x_value; 
+//        }
+
+
+        foreach($request['scancodeinfo'] as $x=>$x_value) {
+            $content .= $x .' = ' .$x_value .'    ';
+        }
+
         return ResponsePassive::text($request['fromusername'], $request['tousername'], $content);
     }
 

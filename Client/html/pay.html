@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Pay Demo</title>
+    <style>
+        *{margin:0;padding: 0;-webkit-box-sizing:border-box;}
+        .width-auto{ width:100%; display:block;}</style>
+</head>
+
+<body>
+
+<select>
+    <option value ="01">支付宝</option>
+    <option value ="02">微信支付</option>
+    <option value="03">银联钱包</option>
+    <option value="04">百度钱包</option>
+</select>
+
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="../js/zepto.min.js"></script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function(){
+        //alert('Got DOMContentLoaded');
+        console.log('Got DOMContentLoaded');
+
+        $.getJSON( wxUrl, function (data, status){
+            //alert('data = ' + JSON.stringify(data));
+
+            if(status == 'success') {
+                // success
+                var msg = 'data = ' + JSON.stringify(data);
+                console.log(msg);
+                //alert(msg);
+
+                useJSSDK(data, wx);
+            }
+            else {
+                // fail
+                var msg = 'data = ' + JSON.stringify(data);
+                console.log(msg);
+                //alert(msg);
+            }
+        });
+
+        function useJSSdk () {
+            var configParams = wxData;
+            $.extend(configParams, {
+                debug: true || UP.W.debugMode,
+                jsApiList: [
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage'
+                ]
+            });
+
+            wx.config(configParams);
+
+            // wx is ready.
+            wx.ready(function () {
+                console.log('>> ready');
+                //alert('>> ready');
+
+
+            });
+
+            wx.error(function (res) {
+                alert(res && res.errMsg);
+            });
+        }
+
+
+    }, false);
+
+</script>
+
+</body>
+</html>

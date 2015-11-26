@@ -73,4 +73,9 @@ include_once 'core/responseinitiative.lib.php';
 include_once 'core/media.lib.php';
 //引入自定义菜单类
 include_once 'core/menu.lib.php';
+
+//-----引入JS-SDK所需类库-------------------
+include_once 'core/apiticket.lib.php';
+include_once 'core/signature.lib.php';
+
 ?>

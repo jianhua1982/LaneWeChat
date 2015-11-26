@@ -6,13 +6,15 @@
  * Time: PM7:20
  */
 
+namespace LaneWeChat\Core;
+
 /**
  * 微信公众平台 JS_SDK 签名
  *
- * @author xienan
+ * @author zero
  */
 
-class Signature
+class ApiSignature
 {
     /**
      * 生成微信签名需要参数
@@ -20,7 +22,6 @@ class Signature
     private $appId;
     private $appSecret;
     private $url;
-    private $cache;
 
     public function __construct($appId, $appSecret, $url) {
         $this->appId = $appId;

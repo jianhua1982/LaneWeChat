@@ -29,7 +29,10 @@
         //alert('Got DOMContentLoaded');
         console.log('Got DOMContentLoaded');
 
-        $.getJSON( wxUrl, function (data, status){
+        var phpBase = 'http://www.wygreen.cn/LaneWeChat/';
+
+
+        $.getJSON( phpBase + 'createSig.php', function (data, status){
             //alert('data = ' + JSON.stringify(data));
 
             if(status == 'success') {

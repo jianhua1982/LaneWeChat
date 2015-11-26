@@ -26,6 +26,7 @@ class MsgConstant{
     //-------远程调用相关--1201到1300------
     const ERROR_REMOTE_SERVER_NOT_RESPOND = 1201; //远程服务器未响应
     const ERROR_GET_ACCESS_TOKEN = 1202; //获取ACCESS_TOKEN失败
+    const ERROR_GET_API_TICKET = 1203; //获取API_TICKET失败
 
     //-------文章管理相关--1301到1400------
 

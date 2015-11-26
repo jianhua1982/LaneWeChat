@@ -13,13 +13,20 @@ class AccessToken{
 
     /**
      * 获取微信Access_Token
+     * $force: force to get new token.
      */
-    public static function getAccessToken(){
-        //检测本地是否已经拥有access_token，并且检测access_token是否过期
-        $accessToken = self::_checkAccessToken();
-        if($accessToken === false){
+    public static function getAccessToken($force){
+        if($force) {
             $accessToken = self::_getAccessToken();
         }
+        else {
+            //检测本地是否已经拥有access_token，并且检测access_token是否过期
+            $accessToken = self::_checkAccessToken();
+            if($accessToken === false){
+                $accessToken = self::_getAccessToken();
+            }
+        }
+
         return $accessToken['access_token'];
     }
 

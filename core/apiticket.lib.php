@@ -1,5 +1,8 @@
 <?php
 namespace LaneWeChat\Core;
+
+//include_once 'accesstoken.lib.php';
+
 /**
  * 微信Access_Token的获取与过期检查
  * Created by jianhua.
@@ -22,28 +25,18 @@ class ApiTicket{
     }
 
     /**
-     * @descrpition 从微信服务器获取微信ACCESS_TOKEN
+     * @descrpition 从微信服务器获取微信API_TICKET
      * @return Ambigous|bool
      */
     private static function _getApiTicket(){
         $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.WECHAT_APPID.'&secret='.WECHAT_APPSECRET;
 
-//        $accessToken = $this->getAccessToken();
-//        $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
-//        $res = json_decode(HttpUtil::sendGetRequet($url));
-//        if($res){
-//            $ticket = $res->ticket;
-//            if($ticket){
-//                //$this->mem->set($ticketKey, $ticket, 0, 7000);
-//                $this->cache->store($ticketKey, $ticket, 7000);
-//            }
-//        }
-
-
+        $accessToken = AccessToken::getAccessToken(true);
+        $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
 
         $apiTicket = Curl::callWebServer($url, '', 'GET');
         if(!isset($apiTicket['api_ticket'])){
-            return Msg::returnErrMsg(MsgConstant::ERROR_GET_ACCESS_TOKEN, '获取ACCESS_TOKEN失败');
+            return Msg::returnErrMsg(MsgConstant::ERROR_GET_API_TICKET, '获取API_TICKET失败');
         }
         $apiTicket['time'] = time();
         $apiTicketJson = json_encode($apiTicket);
@@ -60,7 +53,7 @@ class ApiTicket{
     }
 
     /**
-     * @descrpition 检测微信ACCESS_TOKEN是否过期
+     * @descrpition 检测微信API_TICKET是否过期
      *              -10是预留的网络延迟时间
      * @return bool
      */

@@ -13,9 +13,14 @@ include 'lanewechat.php';
  */
 //设置菜单
 $menuList = array(
-    array('id'=>'1', 'pid'=>'',  'name'=>'常规', 'type'=>'', 'code'=>'key_1'),
-    array('id'=>'2', 'pid'=>'1',  'name'=>'点击', 'type'=>'click', 'code'=>'key_2'),
-    array('id'=>'3', 'pid'=>'1',  'name'=>'浏览', 'type'=>'view', 'code'=>'http://www.lanecn.com'),
+//    array('id'=>'1', 'pid'=>'',  'name'=>'常规', 'type'=>'', 'code'=>'key_1'),
+//    array('id'=>'2', 'pid'=>'1',  'name'=>'点击', 'type'=>'click', 'code'=>'key_2'),
+//    array('id'=>'3', 'pid'=>'1',  'name'=>'浏览', 'type'=>'view', 'code'=>'http://www.lanecn.com'),
+
+    array('id'=>'1', 'pid'=>'',   'name'=>'收银台', 'type'=>'', 'code'=>'key_1'),
+    array('id'=>'2', 'pid'=>'1',  'name'=>'收钱', 'type'=>'view', 'code'=>'http://www.wygreen.cn/LaneWeChat/Client/html/pay.html'),
+    array('id'=>'3', 'pid'=>'1',  'name'=>'查看订单', 'type'=>'view', 'code'=>'http://www.wygreen.cn/LaneWeChat/Client/html/statistic.html'),
+
     array('id'=>'4', 'pid'=>'',  'name'=>'扫码', 'type'=>'', 'code'=>'key_4'),
     array('id'=>'5', 'pid'=>'4', 'name'=>'扫码带提示', 'type'=>'scancode_waitmsg', 'code'=>'key_5'),
     array('id'=>'6', 'pid'=>'4', 'name'=>'扫码推事件', 'type'=>'scancode_push', 'code'=>'key_6'),

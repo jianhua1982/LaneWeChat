@@ -41,7 +41,7 @@
                 console.log(msg);
                 //alert(msg);
 
-                useJSSDK(data, wx);
+                process(data, wx);
             }
             else {
                 // fail
@@ -51,10 +51,10 @@
             }
         });
 
-        function useJSSdk () {
+        function process (wxData) {
             var configParams = wxData;
             $.extend(configParams, {
-                debug: true || UP.W.debugMode,
+                debug: true,
                 jsApiList: [
                     'onMenuShareTimeline',
                     'onMenuShareAppMessage',
@@ -69,7 +69,11 @@
                 console.log('>> ready');
                 //alert('>> ready');
 
+                wx.scanQRCode(function(datga){
 
+                }, function(err) {
+
+                });
             });
 
             wx.error(function (res) {

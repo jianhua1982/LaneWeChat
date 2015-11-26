@@ -33,14 +33,21 @@ class ApiSignature
      * 生成签名
      */
     public function getSignPackage() {
-        $jsapiTicket = \LaneWeChat\Core\ApiTicket::getApiTicket();
+        $jsapiTicket = ApiTicket::getApiTicket();
+
+        //echo $jsapiTicket . '<br>';
+
         $timestamp = time();
         $nonceStr = $this->createNonceStr();
 
         // 这里参数的顺序要按照 key 值 ASCII 码升序排序
         $string = "jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$this->url";
 
+        //echo $string . '<br>';
+
         $signature = sha1($string);
+
+        //echo $signature . '<br>';
 
         $signPackage = array(
             "appId"     => $this->appId,
@@ -56,6 +63,9 @@ class ApiSignature
      * 生成随机字符串
      */
     private function createNonceStr($length = 16) {
+        // simple....
+        return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
         $chars = "";
         $str = "";
         for ($i = 0; $i < $length; $i++) {

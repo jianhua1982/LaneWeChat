@@ -21,7 +21,7 @@ class ApiTicket{
         if($apiTicket === false){
             $apiTicket = self::_getApiTicket();
         }
-        return $apiTicket['api_ticket'];
+        return $apiTicket['ticket'];
     }
 
     /**
@@ -29,13 +29,11 @@ class ApiTicket{
      * @return Ambigous|bool
      */
     private static function _getApiTicket(){
-        $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.WECHAT_APPID.'&secret='.WECHAT_APPSECRET;
-
         $accessToken = AccessToken::getAccessToken(true);
         $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
 
         $apiTicket = Curl::callWebServer($url, '', 'GET');
-        if(!isset($apiTicket['api_ticket'])){
+        if(!isset($apiTicket['ticket'])){
             return Msg::returnErrMsg(MsgConstant::ERROR_GET_API_TICKET, '获取API_TICKET失败');
         }
         $apiTicket['time'] = time();

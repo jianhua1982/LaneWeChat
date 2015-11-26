@@ -60,6 +60,12 @@ class ApiTicket{
     private static function _checkApiTicket(){
         //获取api_ticket。是上面的获取方法获取到后存起来的。
 //        $apiTicket = YourDatabase::get('api_ticket');
+
+        //$fd = fopen('api_ticket', 'r');
+        if (!is_readable('api_ticket')) {
+            return false;
+        }
+
         $data = file_get_contents('api_ticket');
         $apiTicket['value'] = $data;
         if(!empty($apiTicket['value'])){

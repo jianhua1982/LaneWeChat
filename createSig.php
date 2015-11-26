@@ -29,7 +29,11 @@ AutoLoader::register();
 
 //初始化签名类
 
-$url = "$_SERVER[HTTP_REFERER]";
+//$url = "$_SERVER[HTTP_REFERER]";
+
+// mock
+$url = 'http://www.wygreen.cn/LaneWeChat/createSig.php';
+
 
 $sig = new ApiSignature(WECHAT_APPID, WECHAT_APPSECRET, $url);
 

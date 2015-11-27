@@ -15,7 +15,7 @@ class AccessToken{
      * 获取微信Access_Token
      * $force: force to get new token.
      */
-    public static function getAccessToken($force){
+    public static function getAccessToken($force=false){
         if($force) {
             $accessToken = self::_getAccessToken();
         }

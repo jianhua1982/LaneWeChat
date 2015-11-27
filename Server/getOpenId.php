@@ -11,7 +11,7 @@
  * 网页授权
  */
 
-include 'lanewechat.php';
+include '../lanewechat.php';
 
 /**
  * Description: 通过code换取网页授权access_token

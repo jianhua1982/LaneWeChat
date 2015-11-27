@@ -28,8 +28,6 @@
         <option value="04">百度钱包</option>
     </select>
 
-
-
 </section>
 
 
@@ -149,7 +147,7 @@
         }
         else {
             // do auth process
-            ajaxPhp('Server/getOpenId', null, function(data){
+            ajaxPhp('Server/getOpenId.php', null, function(data){
                 // success
                 openid = data.openid;
                 localStorage.setItem(openIdKey, openid);
@@ -173,6 +171,8 @@
                 }
             });
         }
+
+        return;
 
         ajaxPhp('Server/createSig.php', null, function(data){
             // success

@@ -34,7 +34,14 @@ class ResponseInitiative{
                 'content'=>$content,
             ),
         );
+
         $template = json_encode($template);
+
+//        if (ENCRYPT_TYPE=='ENCODING') {
+//            include (dirname(__FILE__).'/core/wx_encrypt.php');
+//            $errorCode = (new WxEncrypt(TOKEN, ENCODINGAESKEY, APPID))->decrypt($_GET['msg_signature'], $_GET['timestamp'], $_GET['nonce'], $postStr, $postStr);
+//            if ($errorCode!=0) exit($errorCode);
+//        }
 
         return Curl::callWebServer(self::$queryUrl, $template, self::$action);
     }

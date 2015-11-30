@@ -1,5 +1,12 @@
 <?php
 namespace LaneWeChat\Core;
+
+
+class paymentStateMachine {
+
+}
+
+
 /**
  * 处理请求
  * Created by Lane.
@@ -127,8 +134,25 @@ class WechatRequest{
 
     // debugging info
     public static function showDebugging(&$request, &$content){
-        foreach($request['scancodeinfo'] as $x=>$x_value) {
-            $content .= '键：' . $x . "值:" . $x_value . '   ';
+
+        foreach($request as $x=>$x_value) {
+
+            $msg = $x . ' = ';
+
+            if(is_string($x_value)) {
+                $msg .= $x_value;
+            }
+            else {
+                $msg .= '{';
+
+                foreach($x_value as $y=>$y_value) {
+                    $msg .= $y .' = ' .$y_value . '  ';
+                }
+
+                $msg .= '}';
+            }
+
+            $content .= $msg . '  ';
         }
     }
 
@@ -320,16 +344,33 @@ class WechatRequest{
 //            $content .= '。扫描信息：无';
 //        }
 
+        /*
+         *  Connect to our payment backend, save pay materials, using state machine to record related billing info.
+         *
+         */
+
+
+
+/*
         $content .= '。扫描信息：'.$scanInfo;
-
-//        foreach($request['scancodeinfo'] as $x=>$x_value) {
-//            $content .= '键：'. $x . "值:" .$x_value; 
-//        }
-
 
         foreach($request['scancodeinfo'] as $x=>$x_value) {
             $content .= $x .' = ' .$x_value .'    ';
         }
+*/
+
+//        foreach($request as $x=>$x_value) {
+//            $content .= $x .' = ' .$x_value .'    ';
+//        }
+
+
+        WechatRequest::showDebugging($request, $content);
+
+
+        /*
+         * 提示收银员输入付款金额。
+         */
+        //$content .= '扫码成功，请您输入收款金额：';
 
         return ResponsePassive::text($request['fromusername'], $request['tousername'], $content);
     }

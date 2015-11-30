@@ -1,6 +1,11 @@
 <?php
-namespace LaneWeChat\Core\Aes;
-include_once "wxBizMsgCrypt.php";
+
+//namespace LaneWeChat\Core\aes;
+
+ini_set("display_errors", "On");
+
+include_once __DIR__.'/wxBizMsgCrypt.php';
+//include_once "wxBizMsgCrypt.php";
 
 // 第三方发送消息给公众平台
 $encodingAesKey = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG";

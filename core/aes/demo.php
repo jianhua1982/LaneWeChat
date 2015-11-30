@@ -2,10 +2,21 @@
 
 //namespace LaneWeChat\Core\aes;
 
+//namespace LaneWeChat;
+
+//use LaneWeChat\Core\aes;
+
 ini_set("display_errors", "On");
 
-include_once __DIR__.'/wxBizMsgCrypt.php';
 //include_once "wxBizMsgCrypt.php";
+
+//include_once __DIR__."/../../lanewechat.php";
+
+include_once __DIR__."/sha1.php";
+include_once __DIR__."/xmlparse.php";
+include_once __DIR__."/pkcs7Encoder.php";
+include_once __DIR__."/errorCode.php";
+include_once __DIR__.'/wxBizMsgCrypt.php';
 
 // 第三方发送消息给公众平台
 $encodingAesKey = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG";
@@ -16,7 +27,8 @@ $appId = "wxb11529c136998cb6";
 $text = "<xml><ToUserName><![CDATA[oia2Tj我是中文jewbmiOUlr6X-1crbLOvLw]]></ToUserName><FromUserName><![CDATA[gh_7f083739789a]]></FromUserName><CreateTime>1407743423</CreateTime><MsgType><![CDATA[video]]></MsgType><Video><MediaId><![CDATA[eYJ1MbwPRJtOvIEabaxHs7TX2D-HV71s79GUxqdUkjm6Gs2Ed1KF3ulAOA9H1xG0]]></MediaId><Title><![CDATA[testCallBackReplyVideo]]></Title><Description><![CDATA[testCallBackReplyVideo]]></Description></Video></xml>";
 
 
-$pc = new WXBizMsgCrypt($token, $encodingAesKey, $appId);
+$pc = new LaneWeChat\Core\aes\WXBizMsgCrypt($token, $encodingAesKey, $appId);
+//$pc = new WXBizMsgCrypt($token, $encodingAesKey, $appId);
 $encryptMsg = '';
 $errCode = $pc->encryptMsg($text, $timeStamp, $nonce, $encryptMsg);
 if ($errCode == 0) {

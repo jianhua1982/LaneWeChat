@@ -133,24 +133,26 @@ class WechatRequest{
     }
 
     // debugging info
-    public static function showDebugging(&$request, &$content){
+    private static function _showDebugging(&$request, &$content){
 
         foreach($request as $x=>$x_value) {
 
             $msg = $x . ' = ';
 
-            if(is_string($x_value)) {
-                $msg .= $x_value;
-            }
-            else {
+            if(is_array($x_value)) {
                 $msg .= '{';
 
                 foreach($x_value as $y=>$y_value) {
-                    $msg .= $y .' = ' .$y_value . '  ';
+                    $msg .= $y .' = ' . $y_value . '  ';
                 }
 
                 $msg .= '}';
             }
+            else {
+                $msg .= $x_value;
+            }
+
+            //$msg = $x . ' = ' . $x_value;
 
             $content .= $msg . '  ';
         }
@@ -162,7 +164,20 @@ class WechatRequest{
      * @return array
      */
     public static function text(&$request){
+
+        // return ""
+        return 'success'; // '';
+
         $content = '收到文本消息';
+
+        //self::_showDebugging($request, $content);
+
+        if (ENCRYPT_TYPE=='ENCODING') {
+            include (dirname(__FILE__).'/core/wx_encrypt.php');
+            $errorCode = (new WxEncrypt(TOKEN, ENCODINGAESKEY, APPID))->decrypt($_GET['msg_signature'], $_GET['timestamp'], $_GET['nonce'], $postStr, $postStr);
+            if ($errorCode!=0) exit($errorCode);
+        }
+
         return ResponsePassive::text($request['fromusername'], $request['tousername'], $content);
     }
 
@@ -364,13 +379,15 @@ class WechatRequest{
 //        }
 
 
-        WechatRequest::showDebugging($request, $content);
+        self::_showDebugging($request, $content);
 
 
         /*
          * 提示收银员输入付款金额。
          */
         //$content .= '扫码成功，请您输入收款金额：';
+
+        //ResponsePassive::
 
         return ResponsePassive::text($request['fromusername'], $request['tousername'], $content);
     }

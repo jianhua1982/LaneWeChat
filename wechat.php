@@ -22,8 +22,16 @@ AutoLoader::register();
 //初始化微信类
 $wechat = new WeChat(WECHAT_TOKEN, TRUE);
 
-
 //首次使用需要注视掉下面这1行（26行），并打开最后一行（29行）
-echo $wechat->run();
+//echo $wechat->run();
 //首次使用需要打开下面这一行（29行），并且注释掉上面1行（26行）。本行用来验证URL
 //$wechat->checkSignature();
+
+
+if(isset($_GET["signature"]) && isset($_GET["timestamp"]) && isset($_GET["nonce"]) && isset($_GET["echostr"])) {
+    $wechat->checkSignature();
+}
+else {
+    echo $wechat->run();
+}
+

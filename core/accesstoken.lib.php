@@ -10,7 +10,6 @@ namespace LaneWeChat\Core;
  * Website: http://www.lanecn.com
  */
 class AccessToken{
-
     /**
      * 获取微信Access_Token
      * $force: force to get new token.
@@ -48,7 +47,7 @@ class AccessToken{
          *
          * 请将变量$accessTokenJson给存起来，这个变量是一个字符串
          */
-        $f = fopen('access_token', 'w+');
+        $f = fopen(self::_fileName2Store(), 'w+');
         fwrite($f, $accessTokenJson);
         fclose($f);
         return $accessToken;
@@ -62,7 +61,12 @@ class AccessToken{
     private static function _checkAccessToken(){
         //获取access_token。是上面的获取方法获取到后存起来的。
 //        $accessToken = YourDatabase::get('access_token');
-        $data = file_get_contents('access_token');
+        $fileName = self::_fileName2Store();
+        if (!is_readable($fileName)) {
+            return false;
+        }
+        $data = file_get_contents($fileName);
+
         $accessToken['value'] = $data;
         if(!empty($accessToken['value'])){
             $accessToken = json_decode($accessToken['value'], true);
@@ -71,6 +75,10 @@ class AccessToken{
             }
         }
         return false;
+    }
+
+    private static function _fileName2Store(){
+        return 'access_token.' . WECHAT_APPID;
     }
 }
 ?>

@@ -124,22 +124,44 @@ class Wechat{
         }
     }
 
+    // customize action.
+
     private function requestAction($action){
-        if($action === 'wxJsSignature') {
+        switch($action) {
+            case 'wxJsSignature': {
+                // got wx js signature
+                if (isset($_SERVER['HTTP_REFERER'])) {
+                    $url = $_SERVER['HTTP_REFERER'];
+                }
+                else {
+                    $url = self::_phpFileFullUrl();
+                }
 
-            if (isset($_SERVER['HTTP_REFERER'])) {
-                $url = $_SERVER['HTTP_REFERER'];
+                //var_dump($url);
+
+                $sig = new ApiSignature(WECHAT_APPID, WECHAT_APPSECRET, $url);
+                $ret = json_encode($sig->getSignPackage());
+                echo $ret;
             }
-            else {
-                $url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; ;
+                break;
+
+            case 'fetchOpenid': {
+                if (isset($_GET['code'])) {
+                    $code = $_GET['code'];
+                    $ret = WeChatOAuth::getAccessTokenAndOpenId($code);
+                    echo json_encode($ret);
+                }
+                else {
+                    WeChatOAuth::getCode($_SERVER['REQUEST_URI'], $state='qianduoduo', $scope='snsapi_base');
+                }
+
             }
-
-            //var_dump($url);
-
-            $sig = new ApiSignature(WECHAT_APPID, WECHAT_APPSECRET, $url);
-            $ret = json_encode($sig->getSignPackage());
-            echo $ret;
+                break;
         }
+    }
+
+    private static function _phpFileFullUrl() {
+        return 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     }
 }
 

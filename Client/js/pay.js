@@ -4,6 +4,8 @@
 
 
 var PHP_ROOT = 'http://www.wygreen.cn/LaneWeChat/wechat.php';
+var BACKEND_ROOT = 'http://www.wygreen.cn/LaneWeChat/';
+var appName = 'testaccount' && 'tujiayanmei';
 
 /**
  * 向php后台发送请求
@@ -12,7 +14,7 @@ var PHP_ROOT = 'http://www.wygreen.cn/LaneWeChat/wechat.php';
  * @param success
  * @param fail
  */
-function ajaxPhp(appName, action, data, success, fail) {
+function ajaxPhp(action, data, success, fail) {
     "use strict";
     $.ajax({
         type: "GET",
@@ -40,10 +42,6 @@ function ajaxPhp(appName, action, data, success, fail) {
     });
 }
 
-var BACKEND_ROOT = 'http://www.wygreen.cn/LaneWeChat/';
-var appName = 'testaccount';
-appName = 'tujiayanmei';
-
 /**
  * 向php后台发送请求
  * @param path
@@ -51,7 +49,7 @@ appName = 'tujiayanmei';
  * @param success
  * @param fail
  */
-function ajax(path, data, success, fail) {
+function ajax2Backend(path, data, success, fail) {
     "use strict";
     $.ajax({
         type: "GET",
@@ -77,6 +75,49 @@ function ajax(path, data, success, fail) {
     });
 }
 
+function fetchUserOpenid(success, fail) {
+    /**
+     *  check user login process
+     *
+     */
+    var openIdKey = 'www.qianduoduo.com.openid';
+    var openid = localStorage.getItem(openIdKey);
+    if(openid && openid.length) {
+        // found cached one.
+        userLoginProcess(openid);
+    }
+    else {
+        // do auth process
+        ajaxPhp('fetchOpenid', null, function(data){
+            // success
+            openid = data.openid;
+            localStorage.setItem(openIdKey, openid);
+            userLoginProcess(openid);
+        });
+    }
+
+    function userLoginProcess(openid) {
+        /**
+         *  openid --> backend, backend then tell the client whether new user or not (need to register?).
+         */
+
+        //ajax('user.login', {openid: openid}, function(data){
+        //    // success
+        //    if(data.resp === '00') {
+        //        //
+        //    }
+        //
+        //    if(true) {
+        //        // need login, using phone + sms code to verify.
+        //    }
+        //});
+
+        //if(success) {
+        //    success(openid);
+        //}
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function(){
 
     //alert('Got DOMContentLoaded');
@@ -86,20 +127,23 @@ document.addEventListener('DOMContentLoaded', function(){
      * bind tap event
      *
      */
-    $("input[name='submit']").on('click', function(){
+    $("#submit").on('click', function(){
         // 提交 付款
-        // wx is ready.
-        wx.ready(function () {
-            console.log('>> ready');
-            //alert('>> ready');
 
-            wx.scanQRCode({
-                needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-                success: function (res) {
-                    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-                    //ajax('payBill', );
-                }
+        fetchUserOpenid(function(openid){
+            // wx is ready.
+            wx.ready(function () {
+                console.log('>> ready');
+                //alert('>> ready');
+
+                wx.scanQRCode({
+                    needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                    success: function (res) {
+                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                        //ajax2Backend()
+                    }
+                });
             });
         });
     });
@@ -108,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function(){
      * got js-sdk signature
      *
      */  // Server/createSig.php
-    ajaxPhp(appName, 'wxJsSignature', null, function(data){
+    ajaxPhp('wxJsSignature', null, function(data){
         // success
         var msg = 'data = ' + JSON.stringify(data);
         console.log(msg);
@@ -117,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         var configParams = data;
         $.extend(configParams, {
-            debug: true,
+            debug: false,
             jsApiList: [
                 //'onMenuShareTimeline',
                 //'onMenuShareAppMessage',
@@ -138,44 +182,5 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     });
 
-
-    return;
-
-    /**
-     *  check user login process
-     *
-     */
-    var openIdKey = 'www.qianduoduo.com.openid';
-    var openid = localStorage.getItem(openIdKey);
-    if(openid && openid.length) {
-        // found cached one.
-        userLoginProcess(openid);
-    }
-    else {
-        // do auth process
-        ajaxPhp('Server/getOpenId.php', null, function(data){
-            // success
-            openid = data.openid;
-            localStorage.setItem(openIdKey, openid);
-            userLoginProcess(openid);
-        });
-    }
-
-    function userLoginProcess(openid) {
-        /**
-         *  openid --> backend, backend then tell the client whether new user or not (need to register?).
-         */
-
-        ajax('user.login', {openid: openid}, function(data){
-            // success
-            if(data.resp === '00') {
-                //
-            }
-
-            if(true) {
-                // need login, using phone + sms code to verify.
-            }
-        });
-    }
 
 }, false);

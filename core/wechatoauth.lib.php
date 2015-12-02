@@ -22,15 +22,17 @@ class WeChatOAuth{
         //公众号的唯一标识
         $appid = WECHAT_APPID;
         //授权后重定向的回调链接地址，请使用urlencode对链接进行处理
-        var_dump($redirect_uri);
-        echo '<br>---------------------<br>';
+//        var_dump($redirect_uri);
+//        echo '<br>---------------------<br>';
         $redirect_uri = WECHAT_URL . $redirect_uri;
-        var_dump($redirect_uri);
         $redirect_uri = urlencode($redirect_uri);
         //返回类型，请填写code
         $response_type = 'code';
         //构造请求微信接口的URL
         $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='.$appid.'&redirect_uri='.$redirect_uri.'&response_type='.$response_type.'&scope='.$scope.'&state='.$state.'#wechat_redirect';
+
+        //var_dump($url);
+
         header('Location: '.$url, true, 301);
     }
 

@@ -97,7 +97,12 @@ function ajax2Backend(path, data, success, fail) {
     });
 }
 
-function fetchUserOpenid(success, fail) {
+
+document.addEventListener('DOMContentLoaded', function(){
+
+    //alert('Got DOMContentLoaded');
+    console.log('Got DOMContentLoaded');
+
     /**
      *  check user login process
      *
@@ -145,25 +150,48 @@ function fetchUserOpenid(success, fail) {
         //if(success) {
         //    success(openid);
         //}
-    }
-}
 
-document.addEventListener('DOMContentLoaded', function(){
+        /**
+         * got js-sdk signature
+         *
+         */
+        ajaxPhp('wxJsSignature', null, function(data){
+            // success
+            var msg = 'data = ' + JSON.stringify(data);
+            console.log(msg);
+            //alert(msg);
+            //process(data);
 
-    //alert('Got DOMContentLoaded');
-    console.log('Got DOMContentLoaded');
+            var configParams = data;
+            $.extend(configParams, {
+                debug: false,
+                jsApiList: [
+                    //'onMenuShareTimeline',
+                    //'onMenuShareAppMessage',
+                    'scanQRCode'
+                ]
+            });
 
-    fetchUserOpenid();
-    return;
+            wx.config(configParams);
 
-    /**
-     * bind tap event
-     *
-     */
-    $("#submit").on('click', function(){
-        // 提交 付款
+            // wx is ready.
+            wx.ready(function () {
+                console.log('>> ready');
+                //alert('>> ready');
+            });
 
-        fetchUserOpenid(function(openid){
+            wx.error(function (res) {
+                alert(res && res.errMsg);
+            });
+        });
+
+        /**
+         * bind tap event
+         *
+         */
+        $("#submit").on('click', function(){
+            // 提交 付款
+
             // wx is ready.
             wx.ready(function () {
                 console.log('>> ready');
@@ -179,43 +207,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 });
             });
         });
-    });
-
-    return;
-
-    /**
-     * got js-sdk signature
-     *
-     */  // Server/createSig.php
-    ajaxPhp('wxJsSignature', null, function(data){
-        // success
-        var msg = 'data = ' + JSON.stringify(data);
-        console.log(msg);
-        //alert(msg);
-        //process(data);
-
-        var configParams = data;
-        $.extend(configParams, {
-            debug: false,
-            jsApiList: [
-                //'onMenuShareTimeline',
-                //'onMenuShareAppMessage',
-                'scanQRCode'
-            ]
-        });
-
-        wx.config(configParams);
-
-        // wx is ready.
-        wx.ready(function () {
-            console.log('>> ready');
-            //alert('>> ready');
-        });
-
-        wx.error(function (res) {
-            alert(res && res.errMsg);
-        });
-    });
-
+    }
 
 }, false);

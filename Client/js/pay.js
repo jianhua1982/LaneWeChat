@@ -7,6 +7,27 @@ var PHP_ROOT = 'http://www.wygreen.cn/LaneWeChat/wechat.php';
 var BACKEND_ROOT = 'http://www.wygreen.cn/LaneWeChat/';
 var appName = 'testaccount' && 'tujiayanmei';
 
+var urlParams = (function urlQuery2Obj (str) {
+    if (!str) {
+        str = location.search;
+    }
+
+    if (str[0] === '?' || str[0] === '#') {
+        str = str.substring(1);
+    }
+    var query = {};
+
+    str.replace(/\b([^&=]*)=([^&=]*)/g, function (m, a, d) {
+        if (typeof query[a] != 'undefined') {
+            query[a] += ',' + decodeURIComponent(d);
+        } else {
+            query[a] = decodeURIComponent(d);
+        }
+    });
+
+    return query;
+})();
+
 /**
  * 向php后台发送请求
  * @param path
@@ -28,6 +49,7 @@ function ajaxPhp(action, data, success, fail) {
                 }
                 success(resp);
             }
+
         },
         error: function (err) {
             if (fail) {
@@ -80,20 +102,28 @@ function fetchUserOpenid(success, fail) {
      *  check user login process
      *
      */
-    var openIdKey = 'www.qianduoduo.com.openid';
-    var openid = localStorage.getItem(openIdKey);
-    if(openid && openid.length) {
-        // found cached one.
-        userLoginProcess(openid);
-    }
-    else {
-        // do auth process
+    if(urlParams.code && urlParams.code.length) {
+        // Got code already, then fetch openid.
         ajaxPhp('fetchOpenid', null, function(data){
             // success
             openid = data.openid;
             localStorage.setItem(openIdKey, openid);
             userLoginProcess(openid);
         });
+    }
+    else {
+        var openIdKey = 'www.qianduoduo.com.openid';
+        var openid = localStorage.getItem(openIdKey);
+        if(openid && openid.length) {
+            /**
+             * found cached openid, security issue\? account relogin by another, but saved openid is the previous one.
+             */
+            userLoginProcess(openid);
+        }
+        else {
+            // do auth process, get code at first.
+            window.location.href = PHP_ROOT + '?appName=' + appName + '&requestAction=fetchCode';
+        }
     }
 
     function userLoginProcess(openid) {
@@ -123,6 +153,9 @@ document.addEventListener('DOMContentLoaded', function(){
     //alert('Got DOMContentLoaded');
     console.log('Got DOMContentLoaded');
 
+    fetchUserOpenid();
+    return;
+
     /**
      * bind tap event
      *
@@ -147,6 +180,8 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         });
     });
+
+    return;
 
     /**
      * got js-sdk signature

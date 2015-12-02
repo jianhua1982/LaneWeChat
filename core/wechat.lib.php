@@ -145,16 +145,27 @@ class Wechat{
             }
                 break;
 
-            case 'fetchOpenid': {
-                if (isset($_GET['code'])) {
-                    $code = $_GET['code'];
-                    $ret = WeChatOAuth::getAccessTokenAndOpenId($code);
-                    echo json_encode($ret);
+            case 'fetchCode': {
+                if (isset($_SERVER['HTTP_REFERER'])) {
+                    $redirectUrl = $_SERVER['HTTP_REFERER'];
                 }
                 else {
-                    WeChatOAuth::getCode($_SERVER['REQUEST_URI'], $state='qianduoduo', $scope='snsapi_base');
+                    $redirectUrl = $_SERVER['REQUEST_URI'];
                 }
 
+                WeChatOAuth::getCode($redirectUrl, $state='qianduoduo', $scope='snsapi_base');
+            }
+                break;
+
+            case 'fetchOpenid': {
+                if (!isset($_GET['code'])) {
+                    echo json_encode(['msg'=>'no code here !!!']);
+                    return;
+                }
+
+                $code = $_GET['code'];
+                $ret = WeChatOAuth::getAccessTokenAndOpenId($code);
+                echo json_encode($ret);
             }
                 break;
         }

@@ -16,18 +16,30 @@ class WeChatOAuth{
      * 将会跳转到redirect_uri/?code=CODE&state=STATE 通过GET方式获取code和state
      */
     public static function getCode($redirect_uri, $state=1, $scope='snsapi_base'){
-        if($redirect_uri[0] == '/'){
-            $redirect_uri = substr($redirect_uri, 1);
+
+        //echo $redirect_uri . '<br>';
+        $components = parse_url($redirect_uri);
+        //var_dump($components);
+        if($components && $components['scheme']) {
+            // full url
+            //$redirect_uri = $redirect_uri;
         }
-        //公众号的唯一标识
-        $appid = WECHAT_APPID;
-        //授权后重定向的回调链接地址，请使用urlencode对链接进行处理
+        else {
+            if($redirect_uri[0] == '/'){
+                $redirect_uri = substr($redirect_uri, 1);
+            }
+
+            //授权后重定向的回调链接地址，请使用urlencode对链接进行处理
 //        var_dump($redirect_uri);
 //        echo '<br>---------------------<br>';
-        $redirect_uri = WECHAT_URL . $redirect_uri;
+            $redirect_uri = WECHAT_URL . $redirect_uri;
+        }
+
         $redirect_uri = urlencode($redirect_uri);
         //返回类型，请填写code
         $response_type = 'code';
+        //公众号的唯一标识
+        $appid = WECHAT_APPID;
         //构造请求微信接口的URL
         $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='.$appid.'&redirect_uri='.$redirect_uri.'&response_type='.$response_type.'&scope='.$scope.'&state='.$state.'#wechat_redirect';
 

@@ -44,7 +44,7 @@ class ApiTicket{
          *
          * 请将变量$apiTicketJson给存起来，这个变量是一个字符串
          */
-        $f = fopen('api_ticket', 'w+');
+        $f = fopen(self::_fileName2Store(), 'w+');
         fwrite($f, $apiTicketJson);
         fclose($f);
         return $apiTicket;
@@ -59,12 +59,13 @@ class ApiTicket{
         //获取api_ticket。是上面的获取方法获取到后存起来的。
 //        $apiTicket = YourDatabase::get('api_ticket');
 
+        $fileName = self::_fileName2Store();
         //$fd = fopen('api_ticket', 'r');
-        if (!is_readable('api_ticket')) {
+        if (!is_readable($fileName)) {
             return false;
         }
 
-        $data = file_get_contents('api_ticket');
+        $data = file_get_contents($fileName);
         $apiTicket['value'] = $data;
         if(!empty($apiTicket['value'])){
             $apiTicket = json_decode($apiTicket['value'], true);
@@ -73,6 +74,10 @@ class ApiTicket{
             }
         }
         return false;
+    }
+
+    private static function _fileName2Store(){
+        return 'api_ticket.' . WECHAT_APPID;
     }
 }
 ?>

@@ -35,11 +35,14 @@ class Wechat{
         }
         //是否打印错误报告
         $this->debug = $debug;
-        //接受并解析微信中心POST发送XML数据
-        $xml = (array) simplexml_load_string($GLOBALS['HTTP_RAW_POST_DATA'], 'SimpleXMLElement', LIBXML_NOCDATA);
 
-        //将数组键名转换为小写
-        $this->request = array_change_key_case($xml, CASE_LOWER);
+        //接受并解析微信中心POST发送XML数据
+        if(isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
+            $xml = (array) simplexml_load_string($GLOBALS['HTTP_RAW_POST_DATA'], 'SimpleXMLElement', LIBXML_NOCDATA);
+
+            //将数组键名转换为小写
+            $this->request = array_change_key_case($xml, CASE_LOWER);
+        }
     }
 
     /**
@@ -85,6 +88,19 @@ class Wechat{
      * @return void
      */
     public function run() {
+
+        $action = '';
+        if (isset($_GET["requestAction"])) {
+            $action = $_GET["requestAction"];
+        }
+        elseif (isset($_POST["requestAction"])) {
+            $action = $_POST["requestAction"];
+        }
+
+        if(strlen($action)) {
+            return $this->requestAction($action);
+        }
+
         return WechatRequest::switchType($this->request);
     }
 
@@ -105,6 +121,24 @@ class Wechat{
             return true;
         }else{
             return false;
+        }
+    }
+
+    private function requestAction($action){
+        if($action === 'wxJsSignature') {
+
+            if (isset($_SERVER['HTTP_REFERER'])) {
+                $url = $_SERVER['HTTP_REFERER'];
+            }
+            else {
+                $url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; ;
+            }
+
+            //var_dump($url);
+
+            $sig = new ApiSignature(WECHAT_APPID, WECHAT_APPSECRET, $url);
+            $ret = json_encode($sig->getSignPackage());
+            echo $ret;
         }
     }
 }

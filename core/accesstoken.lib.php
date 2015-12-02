@@ -35,6 +35,7 @@ class AccessToken{
      */
     private static function _getAccessToken(){
         $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.WECHAT_APPID.'&secret='.WECHAT_APPSECRET;
+        //echo $url . '<br>';
         $accessToken = Curl::callWebServer($url, '', 'GET');
         if(!isset($accessToken['access_token'])){
             return Msg::returnErrMsg(MsgConstant::ERROR_GET_ACCESS_TOKEN, '获取ACCESS_TOKEN失败');

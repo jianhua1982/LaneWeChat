@@ -3,8 +3,8 @@
  */
 
 
-var PHP_ROOT = 'http://www.wygreen.cn/LaneWeChat/wechat.php';
 var BACKEND_ROOT = 'http://www.wygreen.cn/LaneWeChat/';
+var PHP_ROOT = BACKEND_ROOT + 'wechat.php';
 var appName = 'testaccount' && 'tujiayanmei';
 
 var urlParams = (function urlQuery2Obj (str) {
@@ -102,6 +102,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
     //alert('Got DOMContentLoaded');
     console.log('Got DOMContentLoaded');
+
+    return;
 
     /**
      *  check user login process
@@ -201,8 +203,27 @@ document.addEventListener('DOMContentLoaded', function(){
                     needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
                     scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
                     success: function (res) {
+                        // alert(JSON.stringify(res));
                         var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-                        //ajax2Backend()
+                        if(result && result.length) {
+                            var params = {
+                                channel: $('#channel').val(),
+                                money: $('#money').val(),
+                                openid: openid,
+                                scanCode: result
+                            };
+
+                            alert(JSON.stringify(params));
+
+                            return;
+
+                            ajax2Backend('pay.action', params, function(data){
+                                // success
+
+                            }, function(err) {
+                                // fail
+                            });
+                        }
                     }
                 });
             });

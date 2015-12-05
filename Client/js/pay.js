@@ -5,7 +5,7 @@
 
 var BACKEND_ROOT = 'http://www.wygreen.cn/LaneWeChat/';
 var PHP_ROOT = BACKEND_ROOT + 'wechat.php';
-var appName = 'testaccount' && 'tujiayanmei';
+var appName = 'testaccount'; // && 'tujiayanmei';
 
 var urlParams = (function urlQuery2Obj (str) {
     if (!str) {
@@ -27,6 +27,22 @@ var urlParams = (function urlQuery2Obj (str) {
 
     return query;
 })();
+
+if(urlParams && urlParams.rr && urlParams.rr.length) {
+    // random number is available
+}
+else {
+    // redirect to random index page.
+    var href = window.location.href;
+    if(href.indexOf('?') < 0) {
+        href += '?';
+    }
+    else {
+        href += '&';
+    }
+    window.location.href = href + 'rr=' + Math.random() * 10000;
+}
+
 
 /**
  * 向php后台发送请求
@@ -103,7 +119,54 @@ document.addEventListener('DOMContentLoaded', function(){
     //alert('Got DOMContentLoaded');
     console.log('Got DOMContentLoaded');
 
-    return;
+    /**
+     * bind tap event
+     *
+     */
+    $("#submit").on('click', function(){
+        // 提交 付款
+
+        // wx is ready.
+        wx.ready(function () {
+            console.log('>> ready');
+            //alert('>> ready');
+
+            wx.scanQRCode({
+                needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                success: function (res) {
+                    // alert(JSON.stringify(res));
+                    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                    if(result && result.length) {
+                        var params = {
+                            channel: $('#channel').val(),
+                            money: $('#money').val(),
+                            openid: openid,
+                            scanCode: result
+                        };
+
+                        alert(JSON.stringify(params));
+
+                        return;
+
+                        ajax2Backend('pay.action', params, function(data){
+                            // success
+
+                        }, function(err) {
+                            // fail
+                        });
+                    }
+                }
+            });
+        });
+    });
+
+
+    //$("#submit").on('click', function(){
+    //    alert('aa');
+    //});
+    //
+    //return;
 
     /**
      *  check user login process
@@ -184,48 +247,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
             wx.error(function (res) {
                 alert(res && res.errMsg);
-            });
-        });
-
-        /**
-         * bind tap event
-         *
-         */
-        $("#submit").on('click', function(){
-            // 提交 付款
-
-            // wx is ready.
-            wx.ready(function () {
-                console.log('>> ready');
-                //alert('>> ready');
-
-                wx.scanQRCode({
-                    needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-                    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-                    success: function (res) {
-                        // alert(JSON.stringify(res));
-                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-                        if(result && result.length) {
-                            var params = {
-                                channel: $('#channel').val(),
-                                money: $('#money').val(),
-                                openid: openid,
-                                scanCode: result
-                            };
-
-                            alert(JSON.stringify(params));
-
-                            return;
-
-                            ajax2Backend('pay.action', params, function(data){
-                                // success
-
-                            }, function(err) {
-                                // fail
-                            });
-                        }
-                    }
-                });
             });
         });
     }

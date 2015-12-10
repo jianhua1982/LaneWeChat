@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <link rel="stylesheet" type="text/css" href="../../bootstrap-3.3.5/dist/css/bootstrap.min.css" />
+
+    <title>Pay Demo</title>
+    <style>
+
+        div{
+            margin: 10px;
+            padding: 10px;
+            -webkit-box-sizing:border-box;
+        }
+
+        select#channel{
+            /*margin: 10px;*/
+            /*padding: 10px;*/
+            /*font-size: 1.5em;*/
+            /*-webkit-box-sizing:border-box;*/
+
+            font-size: 2.0em;
+            width: 150px;
+            height: 40px;
+            float: left;
+            /*margin-top: 1px;*/
+            /*margin-right: 5px;*/
+            /*margin-bottom: 10px;*/
+            /*margin-left: 20px;*/
+        }
+
+        /*#payLabel{*/
+            /*margin-top: 0px;*/
+            /*margin-right: 0px;*/
+            /*margin-bottom: 0px;*/
+            /*margin-left: 0px;*/
+        /*}*/
+
+        input#money {
+            float: left;
+            font-size: larger;
+            margin-left: 0px;
+            margin-top: 20px;
+            padding: 20px;
+            border: solid;
+
+            border: dotted;
+        }
+
+        button#submit {
+            float: left;
+            font-size: larger;
+            margin-left: 0px;
+            margin-top: 20px;
+            padding: 20px;
+            border: solid;
+
+            border: none;
+            width: 150px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!--<button type="button" class="btn btn-lg btn-danger" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">点我弹出/隐藏弹出框</button>-->
+
+<button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-primary" autocomplete="off">
+    Loading state
+</button>
+
+<!--<div class="dropdown">-->
+    <!--<button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+        <!--Dropdown trigger-->
+        <!--<span class="caret"></span>-->
+    <!--</button>-->
+    <!--<ul class="dropdown-menu" aria-labelledby="dLabel">-->
+        <!--&lt;!&ndash;...&ndash;&gt;-->
+        <!--<li>AA</li>-->
+        <!--<li>AA</li>-->
+        <!--<li>AA</li>-->
+        <!--<li>AA</li>-->
+        <!--<li>AA</li>-->
+        <!--<li>AA</li>-->
+    <!--</ul>-->
+<!--</div>-->
+
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+</button>
+
+<div>
+    <p> 请选择付款类型 </p>
+
+    <select id="channel">
+        <option value="02">支付宝</option>
+        <option value="03">微信支付</option>
+        <option value="01">银联钱包</option>
+        <option value="04">百度钱包</option>
+    </select>
+
+    <input id="money" type="text" value="" placeholder="付款金额">
+
+    <!--<button id="submit" onclick="alert('bb')"> 提交 </button>-->
+
+    <button id="submit"> 提交 </button>
+
+</div>
+
+
+<script src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<!--<script src="../js/zepto.min.js"></script>-->
+<!--<script src="../js/zepto.touchSlider.js"></script>-->
+<!--<script src="/LaneWeChat/"></script>-->
+
+<script src="../js/jquery.min.js"></script>
+<script src="../../bootstrap-3.3.5/dist/js/bootstrap.min.js"></script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function(){
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        });
+
+        $('#myButton').on('click', function () {
+
+            console.log('click...');
+
+            var $btn = $(this).button('loading')
+            // business logic...
+            $btn.button('reset')
+        })
+    });
+
+
+    var BACKEND_ROOT = 'http://www.wygreen.cn/';
+    var PHP_ROOT = BACKEND_ROOT + 'LaneWeChat/wechat.php';
+    var appName = 'testaccount'; // && 'tujiayanmei';
+    var isWX = (navigator.userAgent.toLowerCase().indexOf('micromessenger') >= 0);
+    var amount = '0.01';
+    var urlParams = (function urlQuery2Obj (str) {
+        if (!str) {
+            str = location.search;
+        }
+
+        if (str[0] === '?' || str[0] === '#') {
+            str = str.substring(1);
+        }
+        var query = {};
+
+        str.replace(/\b([^&=]*)=([^&=]*)/g, function (m, a, d) {
+            if (typeof query[a] != 'undefined') {
+                query[a] += ',' + decodeURIComponent(d);
+            } else {
+                query[a] = decodeURIComponent(d);
+            }
+        });
+
+        return query;
+    })();
+
+    if(isWX) {
+        if(urlParams && urlParams.rr && urlParams.rr.length) {
+            // random number is available, go on...
+        }
+        else {
+            // redirect to random index page.
+            var href = window.location.href;
+            if(href.indexOf('?') < 0) {
+                href += '?';
+            }
+            else {
+                href += '&';
+            }
+            window.location.replace(href + 'rr=' + Math.round(Math.random() * 10000));
+        }
+    }
+
+
+    /**
+     * 向php后台发送请求
+     * @param path
+     * @param data
+     * @param success
+     * @param fail
+     */
+    function ajaxPhp(action, data, success, fail) {
+        "use strict";
+        $.ajax({
+            type: "GET",
+            url: PHP_ROOT + '?appName=' + appName + '&requestAction=' + action,
+            dataType: "json",
+            data: data,
+            success: function (resp) {
+                if (success) {
+                    if(typeof resp === 'string') {
+                        resp = JSON.parse(resp);
+                    }
+                    success(resp);
+                }
+
+            },
+            error: function (err) {
+                if (fail) {
+                    fail(err);
+                }
+                else {
+                    // fail
+                    var msg = 'err = ' + JSON.stringify(err);
+                    console.log(msg);
+                }
+            }
+        });
+    }
+
+    /**
+     * 向php后台发送请求
+     * @param path
+     * @param data
+     * @param success
+     * @param fail
+     */
+    function ajax2Backend(path, data, success, fail) {
+        "use strict";
+
+        if(typeof data === 'object') {
+            data = JSON.stringify(data);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: BACKEND_ROOT + path,
+            dataType: "json",
+            data: data,
+            success: function (resp) {
+                if (success) {
+                    success(resp);
+                }
+            },
+            error: function (err) {
+                if (fail) {
+                    fail(err);
+                }
+                else {
+                    // fail
+                    var msg = 'err = ' + JSON.stringify(err);
+                    console.log(msg);
+                    alert(msg);
+                }
+            }
+        });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function(){
+
+        //alert('Got DOMContentLoaded');
+        console.log('Got DOMContentLoaded');
+
+        $('#money').val(amount);
+
+        /**
+         * bind tap event
+         *
+         */
+        $("#submit").on('tap', function(){
+            // 提交 付款
+            console.log('tap');
+            // wx is ready.
+            wx.ready(function () {
+                console.log('>> ready');
+                //alert('>> ready');
+
+                wx.scanQRCode({
+                    needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                    success: function (res) {
+                        // alert(JSON.stringify(res));
+                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                        if(result && result.length) {
+                            var params = {
+                                id: $('#channel').val() + '01',  // '01' means pay
+                                amount: $('#money').val(),
+                                openID: openid,
+                                auth_code: result
+                            };
+
+                            alert(JSON.stringify(params));
+
+                            ajax2Backend('zero/scanweb', params, function(data){
+                                // success
+                                alert(JSON.stringify(data));
+
+                            }, function(err) {
+                                // fail
+                                alert(JSON.stringify(err));
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+
+        /**
+         *  check user login process
+         *
+         */
+
+        if(isWX) {
+            if(urlParams.code && urlParams.code.length) {
+                // Got code already, then fetch openid.
+                ajaxPhp('fetchOpenid', null, function(data){
+                    // success
+                    openid = data.openid;
+                    localStorage.setItem(openIdKey, openid);
+                    userLoginProcess(openid);
+                });
+            }
+            else {
+                var openIdKey = 'www.qianduoduo.com.openid';
+                var openid = localStorage.getItem(openIdKey);
+                if(openid && openid.length) {
+                    /**
+                     * found cached openid, security issue\? account relogin by another, but saved openid is the previous one.
+                     */
+                    userLoginProcess(openid);
+                }
+                else {
+                    // do auth process, get code at first.
+                    window.location.href = PHP_ROOT + '?appName=' + appName + '&requestAction=fetchCode';
+                }
+            }
+        }
+        else {
+            //userLoginProcess('12344567890');
+        }
+
+        function userLoginProcess(openid) {
+            /**
+             *  openid --> backend, backend then tell the client whether new user or not (need to register?).
+             */
+
+            //ajax('user.login', {openid: openid}, function(data){
+            //    // success
+            //    if(data.resp === '00') {
+            //        //
+            //    }
+            //
+            //    if(true) {
+            //        // need login, using phone + sms code to verify.
+            //    }
+            //});
+
+            //if(success) {
+            //    success(openid);
+            //}
+
+            /**
+             * got js-sdk signature
+             *
+             */
+            ajaxPhp('wxJsSignature', null, function(data){
+                // success
+                var msg = 'data = ' + JSON.stringify(data);
+                console.log(msg);
+                //alert(msg);
+                //process(data);
+
+                var configParams = data;
+                $.extend(configParams, {
+                    debug: false,
+                    jsApiList: [
+                        //'onMenuShareTimeline',
+                        //'onMenuShareAppMessage',
+                        'scanQRCode'
+                    ]
+                });
+
+                wx.config(configParams);
+
+                // wx is ready.
+                wx.ready(function () {
+                    console.log('>> ready');
+                    //alert('>> ready');
+                });
+
+                wx.error(function (res) {
+                    alert(res && res.errMsg);
+                });
+            });
+        }
+
+    }, false);
+
+</script>
+
+</body>
+</html>

@@ -168,6 +168,97 @@ class Wechat{
                 echo json_encode($ret);
             }
                 break;
+
+            case 'scanCodePay': {
+
+                //$url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.WECHAT_APPID.'&secret='.WECHAT_APPSECRET;
+
+//                var params = {
+//                    id: $('#channel').val() + '01',  // '01' means pay
+//                                amount: $('#money').val(),
+//                                openId: openid,
+//                                authCode: result
+//                            };
+
+                //var_dump($_GET);
+
+                $params = ['id'=>$_GET['id'], 'amount'=>$_GET['amount'], 'authCode'=>$_GET['authCode'], 'openId'=>$_GET['openId']];
+
+                //$params = [];
+                //parse_str()
+
+                //var_dump($params);
+
+                $ret = Curl::callWebServer(WECHAT_URL . 'zero/scanweb', json_encode($params), 'POST');
+
+                //var_dump($ret);
+
+                /**
+                 * Notify JS frontend.
+                 */
+                echo json_encode($ret);
+
+                // check receipt openid here.
+
+                /**
+                 * Notify the receipt.
+                 */
+                $retParams = $ret['params'];
+                if(is_string($retParams)) {
+                    $retParams = json_decode($retParams, true);
+
+                    // mock
+                    $retParams['total_amount'] = '0.01';
+                }
+
+                //var_dump($retParams);
+
+
+                //$echostr = ResponseInitiative::text($params['openId'], 'hello_jianhua');
+                //var_dump($echostr);
+
+                if($retParams && $retParams['total_amount'] && !is_null($retParams['total_amount'])) {
+                    //WechatRequest::text($request, );
+                    //$content = '收到' + ($ret['total_amount'] === ) + ‘付款金额’;
+                    $content = '收到' . '付款金额' . $retParams['total_amount'];
+                    //var_dump($content);
+                    //$content = 'jianhua';
+
+//                    $aaa = ResponsePassive::text(WECHAT_DEV_ID, $params['openId'], $content);
+//                    var_dump($aaa);
+
+                    //整理格式
+//                    $data = array();
+//                    $menuList = array_values($menuList);
+//                    $data['button'] = $menuList;
+//                    //转换成JSON
+//                    $data = json_encode($data);
+//                    $data = urldecode($data);
+
+                    //$content = urldecode($content);
+
+                    $content = json_encode("我愛水煮魚", JSON_UNESCAPED_UNICODE);
+
+                    ResponseInitiative::text($params['openId'], $content);
+                }
+            }
+                break;
+
+            case 'notifyPayResult': {
+                //if(isset($_POST()))
+                if (!isset($_GET['code'])) {
+                    echo json_encode(['msg'=>'no code here !!!']);
+                    return;
+                }
+
+                $code = $_GET['code'];
+                $ret = WeChatOAuth::getAccessTokenAndOpenId($code);
+                echo json_encode($ret);
+            }
+                break;
+            default:{
+                //return ResponsePassive::text($request['fromusername'], $request['tousername'], '收到未知的消息，我不知道怎么处理');
+            }
         }
     }
 

@@ -158,27 +158,42 @@ class WechatRequest{
         }
     }
 
+    public static function is_undefined(&$test) {
+        return isset($test) && !is_null($test);
+    }
+
     /**
      * @descrpition 文本
      * @param $request
      * @return array
      */
-    public static function text(&$request){
+    public static function text(&$request, $responseText = ''){
+        if(/*self::is_undefined($responseText) && */strlen($responseText)) {  // isset($responseText) &&
+            /*
+             * customize response text, eg: notify user.
+             */
+            $content = $responseText;
 
-        // return ""
-        return 'success'; // '';
+            self::_showDebugging($request, $content);
 
-        $content = '收到文本消息';
+            if (ENCRYPT_TYPE=='ENCODING') {
+                include (dirname(__FILE__).'/core/wx_encrypt.php');
+                $errorCode = (new WxEncrypt(TOKEN, ENCODINGAESKEY, APPID))->decrypt($_GET['msg_signature'], $_GET['timestamp'], $_GET['nonce'], $postStr, $postStr);
+                if ($errorCode!=0) exit($errorCode);
+            }
 
-        //self::_showDebugging($request, $content);
+            self::_showDebugging($request, $content);
 
-        if (ENCRYPT_TYPE=='ENCODING') {
-            include (dirname(__FILE__).'/core/wx_encrypt.php');
-            $errorCode = (new WxEncrypt(TOKEN, ENCODINGAESKEY, APPID))->decrypt($_GET['msg_signature'], $_GET['timestamp'], $_GET['nonce'], $postStr, $postStr);
-            if ($errorCode!=0) exit($errorCode);
+            return ResponsePassive::text($request['fromusername'], $request['tousername'], $content);
+    }
+        else {
+            // return ""
+            //return 'success'; // '';
+
+            $content = '';
+            self::_showDebugging($request, $content);
+            return ResponsePassive::text($request['fromusername'], $request['tousername'], $content);
         }
-
-        return ResponsePassive::text($request['fromusername'], $request['tousername'], $content);
     }
 
     /**

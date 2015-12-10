@@ -113,6 +113,9 @@ class Curl {
 
             }  
         }
+
+        //var_dump($url);
+
         curl_setopt(self::$_ch, CURLOPT_URL, $url);
         curl_setopt(self::$_ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt(self::$_ch, CURLOPT_HEADER, 0);

@@ -69,13 +69,13 @@
     <p> 请选择付款类型 </p>
 
     <select id="channel">
-        <option value="02">支付宝</option>
-        <option value="03">微信支付</option>
-        <option value="01">银联钱包</option>
+        <option value="01">支付宝</option>
+        <option value="02">微信支付</option>
+        <option value="03">银联钱包</option>
         <option value="04">百度钱包</option>
     </select>
 
-    <input id="money" type="text" value="188.88" placeholder="付款金额">
+    <input id="money" type="text" value="" placeholder="付款金额">
 
     <!--<button id="submit" onclick="alert('bb')"> 提交 </button>-->
 
@@ -86,14 +86,17 @@
 
 <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script src="../js/zepto.min.js"></script>
-<script src="../js/pay.js"></script>
+<!--<script src="../js/pay.js"></script>-->
 
 <script>
 
-    var BACKEND_ROOT = 'http://www.wygreen.cn/LaneWeChat/';
-    var PHP_ROOT = BACKEND_ROOT + 'wechat.php';
+    var BACKEND_ROOT = 'http://www.wygreen.cn/';
+    var PHP_ROOT = BACKEND_ROOT + 'LaneWeChat/wechat.php';
     var appName = 'testaccount'; // && 'tujiayanmei';
-
+    var devUserOpenId = '';
+    var receiptUserOpenId = '';
+    var isWX = (navigator.userAgent.toLowerCase().indexOf('micromessenger') >= 0);
+    var amount = '0.01';
     var urlParams = (function urlQuery2Obj (str) {
         if (!str) {
             str = location.search;
@@ -115,20 +118,33 @@
         return query;
     })();
 
-    if(urlParams && urlParams.rr && urlParams.rr.length) {
-        // random number is available, go on...
-    }
-    else {
-        // redirect to random index page.
-        var href = window.location.href;
-        if(href.indexOf('?') < 0) {
-            href += '?';
+    if(isWX) {
+        /**
+         * cache issue, force wx to reload the newest page.
+         */
+        if(urlParams && urlParams.rr && urlParams.rr.length) {
+            // random number is available, go on...
         }
         else {
-            href += '&';
+            // redirect to random index page.
+            var href = window.location.href;
+            if(href.indexOf('?') < 0) {
+                href += '?';
+            }
+            else {
+                href += '&';
+            }
+            window.location.replace(href + 'rr=' + Math.round(Math.random() * 10000));
         }
-        window.location.replace(href + 'rr=' + Math.round(Math.random() * 10000));
     }
+    else {
+        // mock for testing  oDpaVjui28PrVkUHjaCdbjxJvUb0
+        ajaxPhp('scanCodePay', {id:'0101', amount:'0.01', openId:'oDpaVjui28PrVkUHjaCdbjxJvUb0', authCode:'qr11233333'}, function(data){
+            // success
+            alert(JSON.stringify(data));
+        });
+    }
+
 
     /**
      * 向php后台发送请求
@@ -175,9 +191,16 @@
      */
     function ajax2Backend(path, data, success, fail) {
         "use strict";
+
+        if(typeof data === 'object') {
+            data = JSON.stringify(data);
+        }
+
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: BACKEND_ROOT + path,
+            contentType: 'application/json',
+            //contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: data,
             success: function (resp) {
@@ -199,11 +222,16 @@
         });
     }
 
+    function notifyConsumer(params) {
+
+    }
 
     document.addEventListener('DOMContentLoaded', function(){
 
         //alert('Got DOMContentLoaded');
         console.log('Got DOMContentLoaded');
+
+        $('#money').val(amount);
 
         /**
          * bind tap event
@@ -211,7 +239,7 @@
          */
         $("#submit").on('click', function(){
             // 提交 付款
-
+            console.log('click');
             // wx is ready.
             wx.ready(function () {
                 console.log('>> ready');
@@ -225,20 +253,36 @@
                         var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
                         if(result && result.length) {
                             var params = {
-                                channel: $('#channel').val(),
-                                money: $('#money').val(),
-                                openid: openid,
-                                scanCode: result
+                                id: $('#channel').val() + '01',  // '01' means pay
+                                amount: $('#money').val(),
+                                openId: openid,
+                                authCode: result
                             };
 
                             alert(JSON.stringify(params));
 
-                            ajax2Backend('pay.action', params, function(data){
+                            /**
+                             *  让PHP后台处理所有逻辑，+ 消息推送
+                             */
+                            ajaxPhp('scanCodePay', params, function(data){
                                 // success
+                                alert(JSON.stringify(data));
 
                             }, function(err) {
                                 // fail
+                                alert(JSON.stringify(err));
                             });
+
+//                            ajax2Backend('zero/scanweb', params, function(data){
+//                                // success
+//                                alert(JSON.stringify(data));
+//
+//
+//
+//                            }, function(err) {
+//                                // fail
+//                                alert(JSON.stringify(err));
+//                            });
                         }
                     }
                 });
@@ -246,39 +290,38 @@
         });
 
 
-        //$("#submit").on('click', function(){
-        //    alert('aa');
-        //});
-        //
-
-        return;
-
         /**
          *  check user login process
          *
          */
-        if(urlParams.code && urlParams.code.length) {
-            // Got code already, then fetch openid.
-            ajaxPhp('fetchOpenid', null, function(data){
-                // success
-                openid = data.openid;
-                localStorage.setItem(openIdKey, openid);
-                userLoginProcess(openid);
-            });
-        }
-        else {
-            var openIdKey = 'www.qianduoduo.com.openid';
-            var openid = localStorage.getItem(openIdKey);
-            if(openid && openid.length) {
-                /**
-                 * found cached openid, security issue\? account relogin by another, but saved openid is the previous one.
-                 */
-                userLoginProcess(openid);
+
+        if(isWX) {
+            if(urlParams.code && urlParams.code.length) {
+                // Got code already, then fetch openid.
+                ajaxPhp('fetchOpenid', null, function(data){
+                    // success
+                    openid = data.openid;
+                    localStorage.setItem(openIdKey, openid);
+                    userLoginProcess(openid);
+                });
             }
             else {
-                // do auth process, get code at first.
-                window.location.href = PHP_ROOT + '?appName=' + appName + '&requestAction=fetchCode';
+                var openIdKey = 'www.qianduoduo.com.openid';
+                var openid = localStorage.getItem(openIdKey);
+                if(openid && openid.length) {
+                    /**
+                     * found cached openid, security issue\? account relogin by another, but saved openid is the previous one.
+                     */
+                    userLoginProcess(openid);
+                }
+                else {
+                    // do auth process, get code at first.
+                    window.location.href = PHP_ROOT + '?appName=' + appName + '&requestAction=fetchCode';
+                }
             }
+        }
+        else {
+            userLoginProcess('12344567890');
         }
 
         function userLoginProcess(openid) {

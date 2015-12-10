@@ -1,7 +1,5 @@
 <?php
-//include_once __DIR__."/errorCode.php";
-
-namespace LaneWeChat\Core\aes;
+include_once "errorCode.php";
 
 /**
  * XMLParse class

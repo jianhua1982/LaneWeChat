@@ -7,12 +7,10 @@
  */
 
 
-//include_once __DIR__."/sha1.php";
-//include_once __DIR__."/xmlparse.php";
-//include_once __DIR__."/pkcs7Encoder.php";
-//include_once __DIR__."/errorCode.php";
-
-namespace LaneWeChat\Core\aes;
+include_once "sha1.php";
+include_once "xmlparse.php";
+include_once "pkcs7Encoder.php";
+include_once "errorCode.php";
 
 /**
  * 1.第三方回复加密消息给公众平台；

@@ -1,8 +1,6 @@
 <?php
 
-namespace LaneWeChat\Core\aes;
-
-//include_once __DIR__."/errorCode.php";
+include_once "errorCode.php";
 
 /**
  * PKCS7Encoder class
@@ -65,8 +63,6 @@ class Prpcrypt
 	function Prpcrypt($k)
 	{
 		$this->key = base64_decode($k . "=");
-		var_dump($this->key);
-		echo '<br>';
 	}
 
 	/**

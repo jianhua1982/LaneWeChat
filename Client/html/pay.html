@@ -81,6 +81,8 @@
 
     <button id="submit"> 提交 </button>
 
+    <button id="refresh"> 刷新 </button>
+
 </div>
 
 
@@ -117,34 +119,44 @@
 
         return query;
     })();
+    var isRedirect = (urlParams && urlParams.code && urlParams.state);
+    var isRR = (urlParams && urlParams.rr && urlParams.rr.length);
+
+    //alert(location.href);
 
     if(isWX) {
         /**
          * cache issue, force wx to reload the newest page.
          */
-        if(urlParams && urlParams.rr && urlParams.rr.length) {
+        if(isRedirect) {
+            // php redirect page, go on ...
+        }
+        else if(isRR) {
             // random number is available, go on...
         }
         else {
             // redirect to random index page.
-            var href = window.location.href;
-            if(href.indexOf('?') < 0) {
-                href += '?';
-            }
-            else {
-                href += '&';
-            }
-            window.location.replace(href + 'rr=' + Math.round(Math.random() * 10000));
+            replaceUrlByTimeline();
         }
     }
     else {
         // mock for testing  oDpaVjui28PrVkUHjaCdbjxJvUb0
-        ajaxPhp('scanCodePay', {id:'0101', amount:'0.01', openId:'oDpaVjui28PrVkUHjaCdbjxJvUb0', authCode:'qr11233333'}, function(data){
+        ajax2BackendByPhp('scanCodePay', {id:'0101', amount:'0.01', openId:'oDpaVjui28PrVkUHjaCdbjxJvUb0', authCode:'qr11233333', debugMode:'1'}, function(data){
             // success
-            //alert(JSON.stringify(data));
+            alert(JSON.stringify(data));
         });
     }
 
+    function replaceUrlByTimeline () {
+        var href = window.location.href.split('?')[0];
+//        if(href.indexOf('?') < 0) {
+//            href += '?';
+//        }
+//        else {
+//            href += '&';
+//        }
+        window.location.replace(href + '?rr=' + Math.round(Math.random() * 10000));
+    }
 
     /**
      * 向php后台发送请求
@@ -153,8 +165,22 @@
      * @param success
      * @param fail
      */
-    function ajaxPhp(action, data, success, fail) {
+    function ajax2BackendByPhp(action, data, success, fail) {
         "use strict";
+
+        function myFailCB(err) {
+            if(typeof err === 'string') {
+                err = JSON.parse(err);
+            }
+
+            if (fail) {
+                fail(err);
+            }
+            else {
+                console.log(err && err.msg ? err.msg : '网络不给力，请您稍后再试！');
+            }
+        }
+
         $.ajax({
             type: "GET",
             url: PHP_ROOT + '?appName=' + appName + '&requestAction=' + action,
@@ -165,22 +191,43 @@
                     if(typeof resp === 'string') {
                         resp = JSON.parse(resp);
                     }
-                    success(resp);
-                }
 
+                    if(resp.code === '00') {
+                        success && success(resp);
+                    }
+                    else {
+                        myFailCB(resp);
+                    }
+                }
             },
             error: function (err) {
-                if (fail) {
+                myFailCB(err);
+            }
+        });
+    }
+
+    function ajax2Php(action, data, success, fail) {
+        "use strict";
+
+        $.ajax({
+            type: "GET",
+            url: PHP_ROOT + '?appName=' + appName + '&requestAction=' + action,
+            dataType: "json",
+            data: data,
+            success: function (resp) {
+                success && success(resp);
+            },
+            error: function (err) {
+                if(fail) {
                     fail(err);
                 }
                 else {
-                    // fail
-                    var msg = 'err = ' + JSON.stringify(err);
-                    console.log(msg);
+                    alert('ajax2Php for ' + action + ' failed!!');
                 }
             }
         });
     }
+
 
     /**
      * 向php后台发送请求
@@ -233,6 +280,11 @@
 
         $('#money').val(amount);
 
+        $("#refresh").on('click', function(){
+            //window.location.href = 'http://www.wygreen.cn/Client/html/pay.html';
+            replaceUrlByTimeline();
+        });
+
         /**
          * bind tap event
          *
@@ -240,6 +292,8 @@
         $("#submit").on('click', function(){
             // 提交 付款
             console.log('click');
+            //alert('click');
+
             // wx is ready.
             wx.ready(function () {
                 console.log('>> ready');
@@ -259,14 +313,14 @@
                                 authCode: result
                             };
 
-                            alert(JSON.stringify(params));
+                            //alert(JSON.stringify(params));
 
                             /**
                              *  让PHP后台处理所有逻辑，+ 消息推送
                              */
-                            ajaxPhp('scanCodePay', params, function(data){
+                            ajax2BackendByPhp('scanCodePay', params, function(data){
                                 // success
-                                alert(JSON.stringify(data));
+                                //alert(JSON.stringify(data));
 
                             }, function(err) {
                                 // fail
@@ -289,24 +343,23 @@
             });
         });
 
-
         /**
          *  check user login process
          *
          */
-
         if(isWX) {
-            if(urlParams.code && urlParams.code.length) {
+            var openIdKey = 'www.qianduoduo.com.openid';
+
+            if(isRedirect) {
                 // Got code already, then fetch openid.
-                ajaxPhp('fetchOpenid', null, function(data){
+                ajax2Php('fetchOpenid', null, function(data){
                     // success
                     openid = data.openid;
                     localStorage.setItem(openIdKey, openid);
                     userLoginProcess(openid);
                 });
             }
-            else {
-                var openIdKey = 'www.qianduoduo.com.openid';
+            else if(isRR) {
                 var openid = localStorage.getItem(openIdKey);
                 if(openid && openid.length) {
                     /**
@@ -314,7 +367,8 @@
                      */
                     userLoginProcess(openid);
                 }
-                else {
+                else
+                {
                     // do auth process, get code at first.
                     window.location.href = PHP_ROOT + '?appName=' + appName + '&requestAction=fetchCode';
                 }
@@ -348,7 +402,8 @@
              * got js-sdk signature
              *
              */
-            ajaxPhp('wxJsSignature', null, function(data){
+            ajax2Php('wxJsSignature', null, function(data){
+
                 // success
                 var msg = 'data = ' + JSON.stringify(data);
                 console.log(msg);
@@ -370,11 +425,12 @@
                 // wx is ready.
                 wx.ready(function () {
                     console.log('>> ready');
-                    //alert('>> ready');
+                    //alert('>> wx ready');
                 });
 
                 wx.error(function (res) {
-                    alert(res && res.errMsg);
+                    //alert(res && res.errMsg);
+                    //alert('>> wx error');
                 });
             });
         }

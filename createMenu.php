@@ -19,7 +19,7 @@ include 'lanewechat.php';
  * 自定义菜单
  */
 
-$baseUrl = 'http://www.wygreen.cn/LaneWeChat/';
+$baseUrl = 'http://www.wygreen.cn/prod/';
 
 
 //设置菜单
@@ -29,7 +29,7 @@ $menuList = array(
 //    array('id'=>'3', 'pid'=>'1',  'name'=>'浏览', 'type'=>'view', 'code'=>'http://www.lanecn.com'),
 
     array('id'=>'1', 'pid'=>'',   'name'=>'收银台', 'type'=>'', 'code'=>'key_1'),
-    array('id'=>'2', 'pid'=>'1',  'name'=>'收款', 'type'=>'view', 'code'=>$baseUrl . 'Client/html/pay.html'),
+    array('id'=>'2', 'pid'=>'1',  'name'=>'收款', 'type'=>'view', 'code'=>$baseUrl . 'Client/html/pay.html?rr=37912233'),
     array('id'=>'3', 'pid'=>'1',  'name'=>'查看订单', 'type'=>'view', 'code'=>$baseUrl . 'Client/html/statistic.html'),
 
     array('id'=>'4', 'pid'=>'',  'name'=>'帮助', 'type'=>'', 'code'=>'key_4'),
